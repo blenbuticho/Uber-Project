@@ -1,10 +1,12 @@
 # Uber-Project
 
-## Introduction
+# Introduction
 
-## Data Analysis 
 
-# Trips Every Hour 
+
+# Data Analysis 
+
+## Trips Every Hour 
 
 !![image](https://user-images.githubusercontent.com/118494123/234416706-9cfd559e-e5f7-4a9b-ab43-dc083be73b05.png)
 
