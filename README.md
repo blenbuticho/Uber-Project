@@ -6,9 +6,15 @@
 
 # Data Analysis 
 
+- The analysis explores Uber trip data from April to September 2014 in order to gain insights into patterns of usage over time. The data is processed and transformed using various R packages such as dplyr, lubridate, readr and tidyr. The transformed data is then used to create several visualizations including a bar graph of trips by hour, a bar graph of trips by hour and month, a bar graph of trips by day, and a bar graph of trips by day and month. These visualizations provide an understanding of when Uber is most frequently used and how usage patterns vary by day, hour, and month.
+
+
+
 ## Trips Every Hour 
 
-!![image](https://user-images.githubusercontent.com/118494123/234416706-9cfd559e-e5f7-4a9b-ab43-dc083be73b05.png)
+![image](https://user-images.githubusercontent.com/118494123/234416706-9cfd559e-e5f7-4a9b-ab43-dc083be73b05.png)
+
+
 
 ![image](https://user-images.githubusercontent.com/118494123/234416925-1aa10f10-9d94-4cf0-9d18-03bf6b9ce65a.png)
 
