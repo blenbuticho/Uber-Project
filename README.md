@@ -10,7 +10,7 @@ The analysis explores Uber trip data from April to September 2014 in order to ga
 
 
 
-##Cleaning The Data 
+# Cleaning The Data 
 
 
 
