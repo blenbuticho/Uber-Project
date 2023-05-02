@@ -38,4 +38,8 @@ The analysis explores Uber trip data from April to September 2014 in order to ga
            datatable(hour_data)
            write.csv(hour_data, "hour_data.csv")
            
-2. 
+2. Table
+
+
+<img width="1168" alt="Screen Shot 2023-05-02 at 5 53 29 PM" src="https://user-images.githubusercontent.com/118494123/235802996-1bbfc20a-1f5d-4911-8bdb-ebd0e1fa08a4.png">
+
