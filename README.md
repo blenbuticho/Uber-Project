@@ -21,8 +21,11 @@ The analysis explores Uber trip data from April to September 2014 in order to ga
            data_uber$year <- factor(year(data_uber$Date.Time)) `
 
 
-# Filtering the Data
-1. I Created a factor variable for the day of the week and for the hour and minute
+# Filtering the Data and Creating Visuals
+
+1. I created factor variables for the day of the week, hour, minute, and second in my dataset to make it easier to analyze and visualize the data by those time units. Factor variables are useful for categorical data like time units, and they can help with ordering and grouping the data appropriately.
+
+
                       
            data_uber$dayofweek <- factor(weekdays(data_uber$Date.Time), levels = c("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"))
            
@@ -35,4 +38,4 @@ The analysis explores Uber trip data from April to September 2014 in order to ga
            datatable(hour_data)
            write.csv(hour_data, "hour_data.csv")
            
-# Creating Visuals
+2. 
