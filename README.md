@@ -10,7 +10,7 @@ The analysis explores Uber trip data from April to September 2014 in order to ga
 
 
 
-# Cleaning The Data 
+# Cleaning the Data 
 
            data_uber<- rbind(df_1,df_2,df_3,df_4,df_5,df)
            data_uber$Date.Time <- as.POSIXct(data_uber$Date.Time, format = "%m/%d/%Y %H:%M:%S")
@@ -21,5 +21,18 @@ The analysis explores Uber trip data from April to September 2014 in order to ga
            data_uber$year <- factor(year(data_uber$Date.Time)) `
 
 
-
-
+# Filtering the Data
+1. I Created a factor variable for the day of the week and for the hour and minute
+                      
+           data_uber$dayofweek <- factor(weekdays(data_uber$Date.Time), levels = c("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"))
+           
+           data_uber$hour <- factor(hour(parse_date_time(data_uber$Time, orders = "HM:S")))
+           data_uber$minute <- factor(minute(parse_date_time(data_uber$Time, orders = "HM:S")))
+           data_uber$second <- factor(second(parse_date_time(data_uber$Time, orders = "HM:S")))
+           hour_data <- data_uber %>%
+             group_by(hour) %>%
+             dplyr::summarize(Total = n()) 
+           datatable(hour_data)
+           write.csv(hour_data, "hour_data.csv")
+           
+# Creating Visuals
