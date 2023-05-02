@@ -12,7 +12,13 @@ The analysis explores Uber trip data from April to September 2014 in order to ga
 
 # Cleaning The Data 
 
-
+           data_uber <- rbind(df_1,df_2,df_3,df_4,df_5,df)
+           data_uber$Date.Time <- as.POSIXct(data_uber$Date.Time, format = "%m/%d/%Y %H:%M:%S")
+           data_uber$Time <- format(as.POSIXct(data_uber$Date.Time, format = "%m/%d/%Y %H:%M:%S"), format="%H:%M:%S")
+           data_uber$Date.Time <- ymd_hms(data_uber$Date.Time)
+           data_uber$day <- factor(day(data_uber$Date.Time))
+           data_uber$month <- factor(format(data_uber$Date.Time, "%b"))
+           data_uber$year <- factor(year(data_uber$Date.Time))
 
 
 
