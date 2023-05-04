@@ -1,0 +1,123 @@
+```r
+ui <- fluidPage(
+  titlePanel("Uber Rides Analysis Heat Map Charts"),
+  #Display the first chart
+  plotOutput("chart1"),
+  
+  textOutput("explanation1"),
+  
+  #Display the second chart
+  plotOutput("chart2"),
+  
+  textOutput("explanation2"),
+  
+  # Display the third chart
+  plotOutput("chart3"),
+  
+  textOutput("explanation3"),
+  
+  # Display the fourth chart
+  plotOutput("chart4"),
+  
+  textOutput("explanation4"),
+  
+  #Display the fifth chart
+  plotOutput("chart5"),
+  
+  textOutput("explanation5")
+  
+  
+)
+
+# Define the server
+server <- function(input, output) {
+  
+  #Render the first chart
+  output$chart1 <- renderPlot({
+    ggplot(day_and_hour, aes(day, hour, fill = Total)) +
+      geom_tile(color = "white") +
+      ggtitle("Heat Map by Hour and Day") +
+      scale_fill_gradient(low = "pink" , high = "steelblue") +
+      labs(x = "Day of Week", y = "Hour of Day")
+    
+  })
+  
+  #Render the second chart
+  output$chart2 <- renderPlot({
+    ggplot(day_month_group, aes(day, month, fill = Total)) +
+      geom_tile(color = "white") +
+      ggtitle("Heat Map by Month and Day") +
+      scale_fill_gradientn(colors = c("pink","steelblue"), na.value = "grey90") +
+      theme_minimal() +
+      theme(axis.text.x = element_text(angle = 90, hjust = 1),
+            axis.title.x = element_text(color = "black", size = 12, face = "bold", margin = margin(t = 10)),
+            axis.title.y = element_text(color = "black", size = 12, face = "bold", margin = margin(r = 10))) 
+  })
+  
+  # Render the third chart
+  output$chart3 <- renderPlot({
+    ggplot(month_weekday, aes(dayofweek, month, fill = Total)) +
+      geom_tile(color = "white") +
+      ggtitle("Heat Map by Month and Day of Week") +
+      scale_fill_gradientn(colors = c("pink", "steelblue"), na.value = "grey90")
+    
+  })
+  
+  # Render the fourth chart
+  output$chart4 <- renderPlot({
+    ggplot(month_week, aes(week, month, fill = Total)) +
+      geom_tile(color = "white") +
+      ggtitle("Heat Map by Month and Week") +
+      scale_fill_gradientn(colors = c("pink", "steelblue"), na.value = "grey90") +
+      theme_minimal() +
+      theme(axis.text.x = element_text(angle = 90, hjust = 1),
+            axis.title.x = element_text(color = "black", size = 12, face = "bold", margin = margin(t = 10)),
+            axis.title.y = element_text(color = "black", size = 12, face = "bold", margin = margin(r = 10)))
+  })
+  
+  
+  #Render the fifth chart
+  output$chart5 <- renderPlot({
+    ggplot(day0fweek_bases, aes(Base, dayofweek, fill = Total)) +
+      geom_tile(color = "white") +
+      ggtitle("Heat Map by Bases and Day of Week") +
+      scale_fill_gradientn(colors = c("pink","steelblue"), na.value = "grey90") +
+      theme_minimal() +
+      labs(x = "Base", y = "Day of Week")
+    
+    
+  })
+  
+  
+  output$explanation1 <- renderText({
+    "This chart shows the frequency of events by day of the week and hour of the day. The highest frequency is observed on weekdays during business hours. Darker colors indicate higher values. "
+  })
+  
+  output$explanation2 <- renderText({
+    "This chart shows a heat map of the number of transactions by day and month. The color gradient indicates the number of transactions, with pink representing fewer transactions and steel blue representing more transactions. The heat map shows the distribution of the total number of trips taken per day and month combination. 
+    We can observe that the highest number of trips occurred in May and June."
+  })
+  
+  output$explanation3 <- renderText({
+    "The Heat Map by Month and Day of Week shows the total number of Uber pickups for each combination of month and day of the week, using a gradient color scale from pink (low values) to steel blue (high values). We can see that the overall demand for Uber services was highest on Fridays and Saturdays, particularly in the months of April, May, and June. 
+    The demand for Uber services was relatively low on Mondays and Tuesdays across all months."
+    
+  })
+  
+  output$explanation4 <- renderText({
+    "This chart shows a heat map of the number of Uber pickups by month and week of the year. The x-axis represents the week of the year, and the y-axis represents the month. 
+    The color of each tile represents the total number of pickups that occurred during that month and week combination, with darker colors indicating a higher number of pickups. The chart provides an overview of the variation in Uber pickups over the year, showing whether certain months or weeks tend to have more or fewer pickups."
+  })
+  
+  output$explanation5 <- renderText({
+    "This heat map shows the distribution of Uber pickups across different bases (pickup locations) and days of the week. Each tile represents the total number of pickups for a particular base and day of the week, with darker tiles indicating higher pickup counts. 
+    The color scale ranges from pink (low) to steel blue (high). The chart can help to identify which bases are busiest on which days of the week."
+  })
+  
+  
+}
+
+# Run the app
+shinyApp(ui, server)
+
+```
