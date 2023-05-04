@@ -13,7 +13,16 @@ The analysis explores Uber trip data from April to September 2014 in order to ga
 
 
 
-# Cleaning the Data 
+# Cleaning the Data
+
+To begin the Uber data analysis, I imported the necessary packages and libraries that I will utilize in this project. To add some visual appeal to my plot, I created a color vector that I will use in my plotting functions.
+
+```r
+colors <- c("#CC1011", "#665555", "#05a399", "#cfcaca", "#f5e840", "#0683c9", "#e075b0")
+```
+
+Next, I read the individual CSV files containing data from April 2014 to September 2014 and stored them into separate data frames for each month. After reading the files, I combined all the data into one dataframe, named "data_uber".
+
 ```r
            data_uber<- rbind(df_1,df_2,df_3,df_4,df_5,df)
            data_uber$Date.Time <- as.POSIXct(data_uber$Date.Time, format = "%m/%d/%Y %H:%M:%S")
@@ -23,9 +32,6 @@ The analysis explores Uber trip data from April to September 2014 in order to ga
            data_uber$month <- factor(format(data_uber$Date.Time, "%b"))
            data_uber$year <- factor(year(data_uber$Date.Time)) `
 ```
-
-
-
 
 # Filtering the Data and Creating Visuals
 
