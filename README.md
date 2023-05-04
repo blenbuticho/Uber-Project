@@ -34,7 +34,7 @@ colors <- c("#CC1011", "#665555", "#05a399", "#cfcaca", "#f5e840", "#0683c9", "#
 
 # Filtering the Data and Creating Visuals
 
-1. I created factor variables for the day of the week, hour, minute, and second in my dataset to make it easier to analyze and visualize the data by those time units. Factor variables are useful for categorical data like time units, and they can help with ordering and grouping the data appropriately.
+- I created factor variables for the day of the week, hour, minute, and second in my dataset to make it easier to analyze and visualize the data by those time units. Factor variables are useful for categorical data like time units, and they can help with ordering and grouping the data appropriately.
 
 
 ```r                      
@@ -153,4 +153,7 @@ shinyApp(ui, server)
 ```
 
 <img width="881" alt="Screen Shot 2023-05-03 at 11 05 08 PM" src="https://user-images.githubusercontent.com/118494123/236110595-0546edf0-2ba4-4038-a617-d0ec4f079795.png">
+
+# Summary 
+
 
