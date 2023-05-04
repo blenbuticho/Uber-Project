@@ -29,7 +29,7 @@ The analysis explores Uber trip data from April to September 2014 in order to ga
 1. I created factor variables for the day of the week, hour, minute, and second in my dataset to make it easier to analyze and visualize the data by those time units. Factor variables are useful for categorical data like time units, and they can help with ordering and grouping the data appropriately.
 
 
-                      
+```r                      
            data_uber$dayofweek <- factor(weekdays(data_uber$Date.Time), levels = c("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"))
            
            data_uber$hour <- factor(hour(parse_date_time(data_uber$Time, orders = "HM:S")))
@@ -40,7 +40,7 @@ The analysis explores Uber trip data from April to September 2014 in order to ga
              dplyr::summarize(Total = n()) 
            datatable(hour_data)
            write.csv(hour_data, "hour_data.csv")
-           
+ ```          
 
 # Geospatial leaflet map
 
