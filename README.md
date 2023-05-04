@@ -1,5 +1,7 @@
 # Uber-Project
 
+![image](https://user-images.githubusercontent.com/118494123/236111652-46e6e37d-c58e-49c7-ba95-100917feffc2.png)
+
 # Introduction
 
 The Uber data contains information on ride requests in various cities. This project starts by importing and cleaning the Uber data, and then proceeds to create various visualizations and insights based on the data. It covers a range of data analysis techniques, from basic descriptive statistics and time series analysis to more advanced topics like geospatial data visualization and machine learning.
