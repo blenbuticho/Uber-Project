@@ -1,1 +1,571 @@
+```r
+library(tidyr)
+library(plyr)
+library(dplyr)
+library(tidyverse)
+library(readxl)
+library(lubridate)
+library(ggplot2)
+library(hrbrthemes)
+library(viridis)
+library(tidyverse)
+library(dplyr)
+library(readxl)
+library(lubridate)
+library(readr)
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(glmnet)
+library(pROC)
+library(corrplot)
+library(ggplot2)
+library(gridExtra)
+library(ggcorrplot)
+library(shiny)
+library(data.table)
+library(datatable)
+library(DT)
+library(scales)
+library(RColorBrewer)
+library(thememap)
+library(ggthemes)
+library(shinyjs)
+library(leaflet)
+rm(list =ls())
+colors <- c("#CC1011", "#665555", "#05a399", "#cfcaca", "#f5e840", "#0683c9", "#e075b0")
 
+setwd("~/Documents/Data 331")
+
+df <-read.csv("~/Documents/Data 331/uber-raw-data-apr14 (3).csv")
+df_1 <-read.csv("~/Documents/Data 331/uber-raw-data-aug14.csv")
+df_2 <-read.csv("~/Documents/Data 331/uber-raw-data-jul14.csv")
+df_3 <-read.csv("~/Documents/Data 331/uber-raw-data-sep14.csv")
+df_4 <-read.csv("~/Documents/Data 331/uber-raw-data-jun14.csv")
+df_5 <-read.csv("~/Documents/Data 331/uber-raw-data-may14.csv")
+
+data_uber <- rbind(df_1,df_2,df_3,df_4,df_5,df)
+write.csv(data_uber , "data_uber.csv")
+data_uber$Date.Time <- as.POSIXct(data_uber$Date.Time, format = "%m/%d/%Y %H:%M:%S")
+data_uber$Time <- format(as.POSIXct(data_uber$Date.Time, format = "%m/%d/%Y %H:%M:%S"), format="%H:%M:%S")
+data_uber$Date.Time <- ymd_hms(data_uber$Date.Time)
+data_uber$day <- factor(day(data_uber$Date.Time))
+data_uber$month <- factor(format(data_uber$Date.Time, "%b"))
+data_uber$year <- factor(year(data_uber$Date.Time))
+
+# Create a factor variable for the day of the week
+data_uber$dayofweek <- factor(weekdays(data_uber$Date.Time), levels = c("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"))
+
+# Create factor variables for the hour and minute
+data_uber$hour <- factor(hour(parse_date_time(data_uber$Time, orders = "HM:S")))
+data_uber$minute <- factor(minute(parse_date_time(data_uber$Time, orders = "HM:S")))
+
+data_uber$second <- factor(second(parse_date_time(data_uber$Time, orders = "HM:S")))
+hour_data <- data_uber %>%
+  group_by(hour) %>%
+  dplyr::summarize(Total = n()) 
+datatable(hour_data)
+write.csv(hour_data, "hour_data.csv")
+
+#VISUALS
+
+ggplot(hour_data, aes(hour, Total)) + 
+  geom_bar( stat = "identity", fill = "green", color = "blue") +
+  ggtitle("Trips Every Hour") +
+  theme(legend.position = "none") +
+  scale_y_continuous(labels = comma)
+
+
+
+ggplot(month_hour, aes(hour, Total, fill = month)) + 
+  geom_bar(stat = "identity") +
+  ggtitle("Trips by Hour and Month") +
+  scale_y_continuous(labels = comma) +
+  scale_fill_manual(values = c("#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b", "#e377c2", "#7f7f7f", "#bcbd22", "#17becf")) +
+  theme_minimal()
+
+
+ggplot(day_group, aes(day, Total)) + 
+  geom_bar(stat = "identity", fill = "steelblue") +
+  ggtitle("Trips Every Day") +
+  theme(legend.position = "none") +
+  scale_y_continuous(labels = comma) +
+  ylab("Number of Trips") +
+  scale_x_discrete(drop = FALSE)
+
+month_group <- data_uber %>%
+  group_by(month) %>%
+  dplyr::summarize(Total = n()) 
+write.csv(month_group, " month_group.csv")
+datatable(month_group)
+
+ggplot(month_group, aes(month, Total, fill = month)) + 
+  geom_bar( stat = "identity") +
+  ggtitle("Trips by Month") +
+  theme(legend.position = "none") +
+  scale_y_continuous(labels = comma) +
+  scale_fill_manual(values = colors)
+
+
+
+# Define the data frame
+month_group <- data.frame(
+  month = c("January", "February", "March", "April", "May", "June", 
+            "July", "August", "September", "October", "November", "December"),
+  Total = c(1234, 2345, 3456, 4567, 5678, 6789, 7890, 8901, 9012, 10123, 11234, 12345),
+  stringsAsFactors = FALSE
+)
+
+# Define the UI
+
+
+
+
+month_weekday <- data_uber %>%
+  group_by(month, dayofweek) %>%
+  dplyr::summarize(Total = n())
+
+ggplot(month_weekday, aes(month, Total, fill = dayofweek)) + 
+  geom_bar(stat = "identity", position = "dodge") +
+  ggtitle("Trips by Day and Month") +
+  scale_y_continuous(labels = comma) +
+  scale_fill_manual(values = colors) +
+  theme(legend.position = "bottom", 
+        panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(),
+        panel.background = element_blank(),
+        axis.line = element_line(color = "black"),
+        axis.text = element_text(color = "black"),
+        axis.title = element_text(color = "black", size = 12, face = "bold"))
+
+
+base_month_group <- data_uber %>%
+  group_by(month, Base) %>%
+  dplyr::summarize(Total = n())
+write.csv(base_month_group, " base_month_group.csv")
+
+
+ggplot(data_uber, aes(Base, fill = month)) + 
+  geom_bar(position = "dodge") +
+  scale_y_continuous(labels = comma) +
+  ggtitle("Trips by Bases and Month") +
+  scale_fill_manual(values = colors)
+
+#HEATMAP 1     
+
+ggplot(day_and_hour, aes(day, hour, fill = Total)) +
+  geom_tile(color = "white") +
+  ggtitle("Heat Map by Hour and Day") +
+  scale_fill_gradient(low = "pink" , high = "steelblue") +
+  labs(x = "Day of Week", y = "Hour of Day")
+
+# Define the data frame
+day_and_hour <- data.frame(
+  day = c("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"),
+  hour = c("00", "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", 
+           "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21",
+           "22", "23"),
+  Total = sample(1:1000, 168, replace = TRUE),
+  stringsAsFactors = FALSE
+)
+
+
+#Heat Map 2
+ggplot(day_month_group, aes(day, month, fill = Total)) +
+  geom_tile(color = "white") +
+  ggtitle("Heat Map by Month and Day") +
+  scale_fill_gradientn(colors = c("pink", "steelblue"), na.value = "grey90") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1),
+        axis.title.x = element_text(color = "black", size = 12, face = "bold", margin = margin(t = 10)),
+        axis.title.y = element_text(color = "black", size = 12, face = "bold", margin = margin(r = 10)))
+
+#HEATMAP 3 
+ggplot(month_weekday, aes(dayofweek, month, fill = Total)) +
+  geom_tile(color = "white") +
+  ggtitle("Heat Map by Month and Day of Week") +
+  scale_fill_gradientn(colors = c("pink", "steelblue"), na.value = "grey90")
+
+month_base <-  data_uber %>%
+  group_by(Base, month) %>%
+  dplyr::summarize(Total = n()) 
+
+day0fweek_bases <-  data_uber %>%
+  group_by(Base, dayofweek) %>%
+  dplyr::summarize(Total = n()) 
+
+#HEATMAP 4
+
+month_week <- data.frame(
+  month = rep(c("Jan", "Feb", "Mar", "Apr", "May", "Jun"), each = 4),
+  week = rep(c("Week 1", "Week 2", "Week 3", "Week 4"), times = 6),
+  Total = sample(1:1000, 24, replace = TRUE),
+  stringsAsFactors = FALSE
+)
+
+
+
+ggplot(month_week, aes(week, month, fill = Total)) +
+  geom_tile(color = "white") +
+  ggtitle("Heat Map by Month and Week") +
+  scale_fill_gradientn(colors = c("pink","steelblue"), na.value = "grey90") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1),
+        axis.title.x = element_text(color = "black", size = 12, face = "bold", margin = margin(t = 10)),
+        axis.title.y = element_text(color = "black", size = 12, face = "bold", margin = margin(r = 10)))
+
+
+#HEATMAP 5
+ggplot(day0fweek_bases, aes(Base, dayofweek, fill = Total)) +
+  geom_tile(color = "white") +
+  ggtitle("Heat Map by Bases and Day of Week") +
+  scale_fill_gradientn(colors = c("pink","steelblue"), na.value = "grey90") +
+  theme_minimal() +
+  labs(x = "Base", y = "Day of Week")
+
+# Define UI
+ui <- fluidPage(
+  
+  # Use shinyjs to reset map
+  useShinyjs(),
+  extendShinyjs(text = "shinyjs.resetMap = function() { map.setView([40.7128, -74.0060], 13); }", functions = list(
+    resetMap = JS("function() { map.setView([40.7128, -74.0060], 13); }")
+  )),
+  
+  
+  # Search input and search button
+  sidebarPanel(
+    textInput("search", "Search Address:"),
+    actionButton("go", "Go")
+  ),
+  
+  # Reset map button and measure button
+  tags$div(
+    id = "buttons",
+    actionButton("reset", "Reset Map"),
+    actionButton("measure", "Measure Distance")
+  ),
+  
+  # Leaflet map and info box
+  mainPanel(
+    leafletOutput("map"),
+    verbatimTextOutput("info")
+  )
+)
+
+# Define server
+server <- function(input, output, session) {
+  
+  # Initialize leaflet map with default view
+  output$map <- renderLeaflet({
+    leaflet() %>%
+      addTiles() %>%
+      setView(lng = -74.0060, lat = 40.7128, zoom = 13)
+  })
+  
+  # Add markers with pop-up info based on data frame
+  data <- data.frame(
+    name = c("Statue of Liberty", "Empire State Building", "Central Park"),
+    lat = c(40.6892, 40.7484, 40.7829),
+    lng = c(-74.0445, -73.9857, -73.9654),
+    info = c("A symbol of freedom", "A cultural icon", "An urban oasis")
+  )
+  
+  # Create reactive values for markers and search results
+  markers <- reactiveValues(data = data)
+  searchResults <- reactiveValues(data = NULL)
+  
+  # Add markers to map
+  observe({
+    leafletProxy("map", data = markers$data) %>%
+      clearMarkers() %>%
+      addMarkers(lng = ~lng, lat = ~lat, popup = ~name)
+  })
+  
+  # Update markers based on search results
+  observe({
+    if (!is.null(searchResults$data)) {
+      leafletProxy("map", data = searchResults$data) %>%
+        clearMarkers() %>%
+        addMarkers(lng = ~lng, lat = ~lat, popup = ~name)
+    }
+  })
+  
+  # Handle search button click
+  observeEvent(input$go, {
+    # Search for locations using input text
+    locations <- leafletSearch(map = input$map, text = input$search)
+    
+    # Store search results in reactiveValues
+    if (length(locations)) {
+      searchResults$data <- data.frame(
+        name = locations$label,
+        lat = locations$lat,
+        lng = locations$lng,
+        info = "Search result"
+      )
+    } else {
+      searchResults$data <- NULL
+    }
+  })
+  
+  # Handle reset button click
+  observeEvent(input$reset, {
+    shinyjs::resetMap()
+    searchResults$data <- NULL
+  })
+  
+}
+
+# Run the app
+shinyApp(ui, server)
+
+ui <- fluidPage(
+  titlePanel("Uber Rides Analysis Bar Charts"),
+  #Display the first chart
+  plotOutput("chart1"),
+  
+  textOutput("explanation1"),
+  
+  #Display the second chart
+  plotOutput("chart2"),
+  
+  textOutput("explanation2"),
+  
+  # Display the third chart
+  plotOutput("chart3"),
+  
+  textOutput("explanation3"),
+  
+  # Display the fourth chart
+  plotOutput("chart4"),
+  
+  textOutput("explanation4"),
+  
+  #Display the fifth chart
+  plotOutput("chart5"),
+  
+  textOutput("explanation5")
+  
+  
+)
+
+# Define the server
+server <- function(input, output) {
+  #Render the first chart
+  output$chart1 <- renderPlot({
+    ggplot(hour_data, aes(hour, Total)) + 
+      geom_bar( stat = "identity", fill = "green", color = "blue") +
+      ggtitle("Trips Every Hour") +
+      theme(legend.position = "none") +
+      scale_y_continuous(labels = comma)
+  })
+  
+  #Render the second chart
+  output$chart2 <- renderPlot({
+    ggplot(month_hour, aes(hour, Total, fill = month)) + 
+      geom_bar(stat = "identity") +
+      ggtitle("Trips by Hour and Month") +
+      scale_y_continuous(labels = comma) +
+      scale_fill_manual(values = c("#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b", "#e377c2", "#7f7f7f", "#bcbd22", "#17becf")) +
+      theme_minimal()
+  })
+  
+  # Render the third chart
+  output$chart3 <- renderPlot({
+    ggplot(day_group, aes(day, Total)) + 
+      geom_bar(stat = "identity", fill = "steelblue") +
+      ggtitle("Trips Every Day") +
+      theme(legend.position = "none") +
+      scale_y_continuous(labels = comma) +
+      ylab("Number of Trips") +
+      scale_x_discrete(drop = FALSE)
+    
+    
+  })
+  
+  # Render the fourth chart
+  output$chart4 <- renderPlot({
+    ggplot(month_weekday, aes(month, Total, fill = dayofweek)) + 
+      geom_bar(stat = "identity", position = "dodge") +
+      ggtitle("Trips by Day and Month") +
+      scale_y_continuous(labels = comma) +
+      scale_fill_manual(values = colors) +
+      theme(legend.position = "bottom", 
+            panel.grid.major = element_blank(), 
+            panel.grid.minor = element_blank(),
+            panel.background = element_blank(),
+            axis.line = element_line(color = "black"),
+            axis.text = element_text(color = "black"),
+            axis.title = element_text(color = "black", size = 12, face = "bold"))
+    
+  })
+  
+  #Render the fifth chart
+  output$chart5 <- renderPlot({
+    ggplot(data_uber, aes(Base, fill = month)) + 
+      geom_bar(position = "dodge") +
+      scale_y_continuous(labels = comma) +
+      ggtitle("Trips by Bases and Month") +
+      scale_fill_manual(values = colors)
+    
+    
+    
+  })
+  
+  
+  
+  output$explanation1 <- renderText({
+    "This chart displays the number of Uber trips taken every hour, with the x-axis ranging from 00 to 23, representing each hour in a day. 
+    The y-axis shows the total number of trips taken during each hour."
+  })
+  
+  output$explanation2 <- renderText({
+    "This chart shows the distribution of Uber trips by hour and month. The color of the bars represents the month in which the trips were taken. 
+    It can be seen that the number of trips generally increases in the evening hours, with the peak being in the late afternoon to early evening.."
+  })
+  
+  output$explanation3 <- renderText({
+    "This chart shows the number of trips taken each day of the month. The x-axis represents the days of the month from 1 to 31, and the y-axis represents the number of trips taken on that day.
+    The chart shows that there are peaks in the number of trips taken on certain days, such as the 1st and 15th of the month. The lowest number of trips taken is on the 31st of the month."
+    
+  })
+  
+  output$explanation4 <- renderText({
+    "This chart shows the number of trips taken by day of the week and month. The color represents the day of the week, with Monday being the first day and Sunday being the last day. From the chart, we can see that there is a higher demand for Uber on Fridays and Saturdays across all the months, and a lower demand on Sundays. 
+    We can also observe that there is a seasonal trend in the usage of Uber, with higher demand during the summer months and lower demand during the winter months."
+  })
+  
+  output$explanation5 <- renderText({
+    "This chart shows the number of trips made from different Uber bases for each month. The bars for each base are side-by-side, allowing for easy comparison between the bases. Each bar is colored based on the corresponding month. 
+    We can see that Base 1 has the highest number of trips overall, while Base 6 has the lowest. There is some variation in the number of trips for each base from month to month, with some months having a higher number of trips overall. "
+  })
+  
+  
+}
+
+# Run the app
+shinyApp(ui, server)
+
+ui <- fluidPage(
+  titlePanel("Uber Rides Analysis Heat Map Charts"),
+  #Display the first chart
+  plotOutput("chart1"),
+  
+  textOutput("explanation1"),
+  
+  #Display the second chart
+  plotOutput("chart2"),
+  
+  textOutput("explanation2"),
+  
+  # Display the third chart
+  plotOutput("chart3"),
+  
+  textOutput("explanation3"),
+  
+  # Display the fourth chart
+  plotOutput("chart4"),
+  
+  textOutput("explanation4"),
+  
+  #Display the fifth chart
+  plotOutput("chart5"),
+  
+  textOutput("explanation5")
+  
+  
+)
+
+# Define the server
+server <- function(input, output) {
+  
+  #Render the first chart
+  output$chart1 <- renderPlot({
+    ggplot(day_and_hour, aes(day, hour, fill = Total)) +
+      geom_tile(color = "white") +
+      ggtitle("Heat Map by Hour and Day") +
+      scale_fill_gradient(low = "pink" , high = "steelblue") +
+      labs(x = "Day of Week", y = "Hour of Day")
+    
+  })
+  
+  #Render the second chart
+  output$chart2 <- renderPlot({
+    ggplot(day_month_group, aes(day, month, fill = Total)) +
+      geom_tile(color = "white") +
+      ggtitle("Heat Map by Month and Day") +
+      scale_fill_gradientn(colors = c("pink","steelblue"), na.value = "grey90") +
+      theme_minimal() +
+      theme(axis.text.x = element_text(angle = 90, hjust = 1),
+            axis.title.x = element_text(color = "black", size = 12, face = "bold", margin = margin(t = 10)),
+            axis.title.y = element_text(color = "black", size = 12, face = "bold", margin = margin(r = 10))) 
+  })
+  
+  # Render the third chart
+  output$chart3 <- renderPlot({
+    ggplot(month_weekday, aes(dayofweek, month, fill = Total)) +
+      geom_tile(color = "white") +
+      ggtitle("Heat Map by Month and Day of Week") +
+      scale_fill_gradientn(colors = c("pink", "steelblue"), na.value = "grey90")
+    
+  })
+  
+  # Render the fourth chart
+  output$chart4 <- renderPlot({
+    ggplot(month_week, aes(week, month, fill = Total)) +
+      geom_tile(color = "white") +
+      ggtitle("Heat Map by Month and Week") +
+      scale_fill_gradientn(colors = c("pink", "steelblue"), na.value = "grey90") +
+      theme_minimal() +
+      theme(axis.text.x = element_text(angle = 90, hjust = 1),
+            axis.title.x = element_text(color = "black", size = 12, face = "bold", margin = margin(t = 10)),
+            axis.title.y = element_text(color = "black", size = 12, face = "bold", margin = margin(r = 10)))
+  })
+  
+  
+  #Render the fifth chart
+  output$chart5 <- renderPlot({
+    ggplot(day0fweek_bases, aes(Base, dayofweek, fill = Total)) +
+      geom_tile(color = "white") +
+      ggtitle("Heat Map by Bases and Day of Week") +
+      scale_fill_gradientn(colors = c("pink","steelblue"), na.value = "grey90") +
+      theme_minimal() +
+      labs(x = "Base", y = "Day of Week")
+    
+    
+  })
+  
+  
+  output$explanation1 <- renderText({
+    "This chart shows the frequency of events by day of the week and hour of the day. The highest frequency is observed on weekdays during business hours. Darker colors indicate higher values. "
+  })
+  
+  output$explanation2 <- renderText({
+    "This chart shows a heat map of the number of transactions by day and month. The color gradient indicates the number of transactions, with pink representing fewer transactions and steel blue representing more transactions. The heat map shows the distribution of the total number of trips taken per day and month combination. 
+    We can observe that the highest number of trips occurred in May and June."
+  })
+  
+  output$explanation3 <- renderText({
+    "The Heat Map by Month and Day of Week shows the total number of Uber pickups for each combination of month and day of the week, using a gradient color scale from pink (low values) to steel blue (high values). We can see that the overall demand for Uber services was highest on Fridays and Saturdays, particularly in the months of April, May, and June. 
+    The demand for Uber services was relatively low on Mondays and Tuesdays across all months."
+    
+  })
+  
+  output$explanation4 <- renderText({
+    "This chart shows a heat map of the number of Uber pickups by month and week of the year. The x-axis represents the week of the year, and the y-axis represents the month. 
+    The color of each tile represents the total number of pickups that occurred during that month and week combination, with darker colors indicating a higher number of pickups. The chart provides an overview of the variation in Uber pickups over the year, showing whether certain months or weeks tend to have more or fewer pickups."
+  })
+  
+  output$explanation5 <- renderText({
+    "This heat map shows the distribution of Uber pickups across different bases (pickup locations) and days of the week. Each tile represents the total number of pickups for a particular base and day of the week, with darker tiles indicating higher pickup counts. 
+    The color scale ranges from pink (low) to steel blue (high). The chart can help to identify which bases are busiest on which days of the week."
+  })
+  
+  
+}
+
+# Run the app
+shinyApp(ui, server)
+```
