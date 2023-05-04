@@ -158,6 +158,4 @@ shinyApp(ui, server)
 
 <img width="881" alt="Screen Shot 2023-05-03 at 11 05 08 PM" src="https://user-images.githubusercontent.com/118494123/236110595-0546edf0-2ba4-4038-a617-d0ec4f079795.png">
 
-# Summary 
-
 
