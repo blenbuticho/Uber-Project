@@ -1,1 +1,126 @@
+```r
+ui <- fluidPage(
+  titlePanel("Uber Rides Analysis Bar Charts"),
+  #Display the first chart
+  plotOutput("chart1"),
+  
+  textOutput("explanation1"),
+  
+  #Display the second chart
+  plotOutput("chart2"),
+  
+  textOutput("explanation2"),
+  
+  # Display the third chart
+  plotOutput("chart3"),
+  
+  textOutput("explanation3"),
+  
+  # Display the fourth chart
+  plotOutput("chart4"),
+  
+  textOutput("explanation4"),
+  
+  #Display the fifth chart
+  plotOutput("chart5"),
+  
+  textOutput("explanation5")
+  
+  
+)
 
+# Define the server
+server <- function(input, output) {
+  #Render the first chart
+  output$chart1 <- renderPlot({
+    ggplot(hour_data, aes(hour, Total)) + 
+      geom_bar( stat = "identity", fill = "green", color = "blue") +
+      ggtitle("Trips Every Hour") +
+      theme(legend.position = "none") +
+      scale_y_continuous(labels = comma)
+  })
+  
+  #Render the second chart
+  output$chart2 <- renderPlot({
+    ggplot(month_hour, aes(hour, Total, fill = month)) + 
+      geom_bar(stat = "identity") +
+      ggtitle("Trips by Hour and Month") +
+      scale_y_continuous(labels = comma) +
+      scale_fill_manual(values = c("#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b", "#e377c2", "#7f7f7f", "#bcbd22", "#17becf")) +
+      theme_minimal()
+  })
+  
+  # Render the third chart
+  output$chart3 <- renderPlot({
+    ggplot(day_group, aes(day, Total)) + 
+      geom_bar(stat = "identity", fill = "steelblue") +
+      ggtitle("Trips Every Day") +
+      theme(legend.position = "none") +
+      scale_y_continuous(labels = comma) +
+      ylab("Number of Trips") +
+      scale_x_discrete(drop = FALSE)
+    
+    
+  })
+  
+  # Render the fourth chart
+  output$chart4 <- renderPlot({
+    ggplot(month_weekday, aes(month, Total, fill = dayofweek)) + 
+      geom_bar(stat = "identity", position = "dodge") +
+      ggtitle("Trips by Day and Month") +
+      scale_y_continuous(labels = comma) +
+      scale_fill_manual(values = colors) +
+      theme(legend.position = "bottom", 
+            panel.grid.major = element_blank(), 
+            panel.grid.minor = element_blank(),
+            panel.background = element_blank(),
+            axis.line = element_line(color = "black"),
+            axis.text = element_text(color = "black"),
+            axis.title = element_text(color = "black", size = 12, face = "bold"))
+    
+  })
+  
+  #Render the fifth chart
+  output$chart5 <- renderPlot({
+    ggplot(data_uber, aes(Base, fill = month)) + 
+      geom_bar(position = "dodge") +
+      scale_y_continuous(labels = comma) +
+      ggtitle("Trips by Bases and Month") +
+      scale_fill_manual(values = colors)
+    
+    
+    
+  })
+  
+  
+  
+  output$explanation1 <- renderText({
+    "This chart displays the number of Uber trips taken every hour, with the x-axis ranging from 00 to 23, representing each hour in a day. 
+    The y-axis shows the total number of trips taken during each hour."
+  })
+  
+  output$explanation2 <- renderText({
+    "This chart shows the distribution of Uber trips by hour and month. The color of the bars represents the month in which the trips were taken. 
+    It can be seen that the number of trips generally increases in the evening hours, with the peak being in the late afternoon to early evening.."
+  })
+  
+  output$explanation3 <- renderText({
+    "This chart shows the number of trips taken each day of the month. The x-axis represents the days of the month from 1 to 31, and the y-axis represents the number of trips taken on that day.
+    The chart shows that there are peaks in the number of trips taken on certain days, such as the 1st and 15th of the month. The lowest number of trips taken is on the 31st of the month."
+    
+  })
+  
+  output$explanation4 <- renderText({
+    "This chart shows the number of trips taken by day of the week and month. The color represents the day of the week, with Monday being the first day and Sunday being the last day. From the chart, we can see that there is a higher demand for Uber on Fridays and Saturdays across all the months, and a lower demand on Sundays. 
+    We can also observe that there is a seasonal trend in the usage of Uber, with higher demand during the summer months and lower demand during the winter months."
+  })
+  
+  output$explanation5 <- renderText({
+    "This chart shows the number of trips made from different Uber bases for each month. The bars for each base are side-by-side, allowing for easy comparison between the bases. Each bar is colored based on the corresponding month. 
+    We can see that Base 1 has the highest number of trips overall, while Base 6 has the lowest. There is some variation in the number of trips for each base from month to month, with some months having a higher number of trips overall. "
+  })
+  
+  
+}
+
+```
