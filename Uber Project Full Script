@@ -1,4 +1,3 @@
-```r
 library(tidyr)
 library(plyr)
 library(dplyr)
@@ -568,4 +567,3 @@ server <- function(input, output) {
 
 # Run the app
 shinyApp(ui, server)
-```
