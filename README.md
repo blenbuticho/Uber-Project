@@ -52,5 +52,105 @@ colors <- c("#CC1011", "#665555", "#05a399", "#cfcaca", "#f5e840", "#0683c9", "#
 
 # Geospatial leaflet map
 
+```r
+# Define UI
+ui <- fluidPage(
+  
+  # Use shinyjs to reset map
+  useShinyjs(),
+  extendShinyjs(text = "shinyjs.resetMap = function() { map.setView([40.7128, -74.0060], 13); }", functions = list(
+    resetMap = JS("function() { map.setView([40.7128, -74.0060], 13); }")
+  )),
+  
+  
+  # Search input and search button
+  sidebarPanel(
+    textInput("search", "Search Address:"),
+    actionButton("go", "Go")
+  ),
+  
+  # Reset map button and measure button
+  tags$div(
+    id = "buttons",
+    actionButton("reset", "Reset Map"),
+    actionButton("measure", "Measure Distance")
+  ),
+  
+  # Leaflet map and info box
+  mainPanel(
+    leafletOutput("map"),
+    verbatimTextOutput("info")
+  )
+)
+
+# Define server
+server <- function(input, output, session) {
+  
+  # Initialize leaflet map with default view
+  output$map <- renderLeaflet({
+    leaflet() %>%
+      addTiles() %>%
+      setView(lng = -74.0060, lat = 40.7128, zoom = 13)
+  })
+  
+  # Add markers with pop-up info based on data frame
+  data <- data.frame(
+    name = c("Statue of Liberty", "Empire State Building", "Central Park"),
+    lat = c(40.6892, 40.7484, 40.7829),
+    lng = c(-74.0445, -73.9857, -73.9654),
+    info = c("A symbol of freedom", "A cultural icon", "An urban oasis")
+  )
+  
+  # Create reactive values for markers and search results
+  markers <- reactiveValues(data = data)
+  searchResults <- reactiveValues(data = NULL)
+  
+  # Add markers to map
+  observe({
+    leafletProxy("map", data = markers$data) %>%
+      clearMarkers() %>%
+      addMarkers(lng = ~lng, lat = ~lat, popup = ~name)
+  })
+  
+  # Update markers based on search results
+  observe({
+    if (!is.null(searchResults$data)) {
+      leafletProxy("map", data = searchResults$data) %>%
+        clearMarkers() %>%
+        addMarkers(lng = ~lng, lat = ~lat, popup = ~name)
+    }
+  })
+  
+  # Handle search button click
+  observeEvent(input$go, {
+    # Search for locations using input text
+    locations <- leafletSearch(map = input$map, text = input$search)
+    
+    # Store search results in reactiveValues
+    if (length(locations)) {
+      searchResults$data <- data.frame(
+        name = locations$label,
+        lat = locations$lat,
+        lng = locations$lng,
+        info = "Search result"
+      )
+    } else {
+      searchResults$data <- NULL
+    }
+  })
+  
+  # Handle reset button click
+  observeEvent(input$reset, {
+    shinyjs::resetMap()
+    searchResults$data <- NULL
+  })
+  
+}
+
+# Run the app
+shinyApp(ui, server)
+
+```
+
 <img width="881" alt="Screen Shot 2023-05-03 at 11 05 08 PM" src="https://user-images.githubusercontent.com/118494123/236110595-0546edf0-2ba4-4038-a617-d0ec4f079795.png">
 
