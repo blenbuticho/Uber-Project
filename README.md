@@ -30,7 +30,7 @@ colors <- c("#CC1011", "#665555", "#05a399", "#cfcaca", "#f5e840", "#0683c9", "#
 
 # Data Analysis 
 
-- The analysis explores Uber trip data from April to September 2014 in order to gain insights into patterns of usage over time. The data is processed and transformed using various R packages such as dplyr, lubridate, readr and tidyr. The transformed data is then used to create several visualizations including a bar graph of trips by hour, a bar graph of trips by hour and month, a bar graph of trips by day, and a bar graph of trips by day and month. These visualizations provide an understanding of when Uber is most frequently used and how usage patterns vary by day, hour, and month.
+- The analysis explores Uber trip data to gain insights into patterns of usage over time. The transformed data is then used to create several visualizations including a bar graph of trips by hour, a bar graph of trips by hour and month, a bar graph of trips by day, and a bar graph of trips by day and month. These visualizations provide an understanding of when Uber is most frequently used and how usage patterns vary by day, hour, and month.
 
 # Filtering the Data and Creating Visuals
 
@@ -49,6 +49,10 @@ colors <- c("#CC1011", "#665555", "#05a399", "#cfcaca", "#f5e840", "#0683c9", "#
            datatable(hour_data)
            write.csv(hour_data, "hour_data.csv")
  ```          
+- Then I created a pivot table that displays the number of trips taken by the hour. The original Uber data frame contains information about rides taken each day, including their month, hour, year, and location. I filtered this data to only show the number of trips taken by the hour. The pivot table highlights that the number of trips varies throughout the day, with some hours having a higher number of trips compared to others.
+ 
+<img width="809" alt="Screen Shot 2023-05-04 at 9 40 32 AM" src="https://user-images.githubusercontent.com/118494123/236245288-e2e9c56a-68cc-4212-9d2b-90b6dab71fde.png">
+
 
 # Geospatial leaflet map
 
